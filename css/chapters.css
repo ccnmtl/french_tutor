@@ -1,0 +1,421 @@
+/* ============================================================
+   chapters.css — shared styles for Teacher & Student chapter pages
+   ============================================================ */
+
+/* ── Top header / breadcrumb ─────────────────────────────── */
+.ch-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.ch-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+.ch-breadcrumb a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.ch-breadcrumb a:hover { color: var(--accent-blue); text-decoration: underline; }
+.ch-breadcrumb i { font-size: 0.7rem; opacity: 0.6; }
+
+.ch-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.ch-header h1 {
+  font-size: 2rem;
+  margin: 0;
+  background: linear-gradient(135deg, #1a2744 30%, #4a7ab5 70%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ch-header .subtitle {
+  color: var(--text-secondary);
+  margin: 0.3rem 0 0;
+  font-size: 0.95rem;
+}
+
+/* ── Mode toggle (Teacher / Student) ──────────────────────── */
+.mode-toggle {
+  display: inline-flex;
+  background: #eef3fb;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
+}
+.mode-toggle button {
+  padding: 7px 16px;
+  border: none;
+  background: transparent;
+  border-radius: 999px;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.mode-toggle button.active {
+  background: #fff;
+  color: var(--accent-blue);
+  box-shadow: 0 1px 4px rgba(74,122,181,0.18);
+}
+
+/* ── Primary action button ───────────────────────────────── */
+.btn-primary-ch {
+  padding: 9px 18px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #4a7ab5, #6b9fd4);
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  box-shadow: 0 4px 14px rgba(74,122,181,0.22);
+  transition: transform 0.15s, box-shadow 0.2s;
+}
+.btn-primary-ch:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(74,122,181,0.32); }
+.btn-primary-ch:active { transform: scale(0.98); }
+.btn-primary-ch:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-secondary-ch {
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--text-primary);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+.btn-secondary-ch:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+
+.btn-danger-ch {
+  padding: 6px 12px;
+  border: 1px solid rgba(220,38,38,0.25);
+  border-radius: 8px;
+  background: rgba(220,38,38,0.06);
+  color: #dc2626;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.btn-danger-ch:hover { background: rgba(220,38,38,0.14); }
+
+/* ── Chapter grid (student view & teacher list) ──────────── */
+.ch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.ch-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  box-shadow: 0 2px 10px rgba(74,122,181,0.06);
+  transition: all 0.25s;
+  position: relative;
+}
+.ch-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(74,122,181,0.14);
+  border-color: var(--accent-blue);
+}
+
+.ch-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.ch-card-head h3 {
+  font-size: 1.1rem;
+  margin: 0;
+  flex: 1;
+}
+.ch-card .ch-desc {
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  min-height: 2.6em;
+}
+.ch-card .ch-meta {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+  flex-wrap: wrap;
+}
+.ch-card .ch-meta span i { margin-right: 4px; opacity: 0.7; }
+
+.ch-card .ch-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+.ch-card .ch-actions a,
+.ch-card .ch-actions button {
+  flex: 1;
+  text-align: center;
+  justify-content: center;
+}
+
+/* student start button */
+.ch-card .ch-start {
+  text-decoration: none;
+}
+
+/* ── Empty state ──────────────────────────────────────────── */
+.ch-empty {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--text-muted);
+}
+.ch-empty i {
+  font-size: 3rem;
+  opacity: 0.3;
+  display: block;
+  margin-bottom: 1rem;
+}
+.ch-empty h3 {
+  color: var(--text-secondary);
+  margin: 0 0 0.5rem;
+}
+.ch-empty p {
+  font-size: 0.9rem;
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+/* ── Modal (chapter editor) ──────────────────────────────── */
+.ch-modal-bg {
+  position: fixed; inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.ch-modal {
+  background: #fff;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 720px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 60px rgba(15,23,42,0.35);
+  overflow: hidden;
+}
+.ch-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, #f7faff, #fff);
+}
+.ch-modal-head h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+.ch-modal-close {
+  background: none; border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.ch-modal-close:hover { background: rgba(0,0,0,0.04); color: var(--text-primary); }
+
+.ch-modal-body {
+  padding: 1.2rem 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ch-modal-foot {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  background: #fafbfd;
+}
+
+/* form fields */
+.ch-field { display: flex; flex-direction: column; gap: 0.35rem; }
+.ch-field label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ch-field label .hint {
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.ch-field input,
+.ch-field textarea {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ch-field input:focus,
+.ch-field textarea:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(74,122,181,0.13);
+}
+.ch-field textarea { resize: vertical; min-height: 110px; line-height: 1.45; }
+
+/* ── File uploader ───────────────────────────────────────── */
+.ch-dropzone {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 1.2rem;
+  text-align: center;
+  background: #f8fbff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.ch-dropzone:hover,
+.ch-dropzone.dragover {
+  border-color: var(--accent-blue);
+  background: rgba(74,122,181,0.06);
+}
+.ch-dropzone i {
+  font-size: 1.6rem;
+  color: var(--accent-blue);
+  opacity: 0.7;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+.ch-dropzone p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+}
+.ch-dropzone .small {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+.ch-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+.ch-file-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  font-size: 0.84rem;
+}
+.ch-file-item .f-icon { font-size: 1rem; color: var(--accent-blue); }
+.ch-file-item .f-name { flex: 1; word-break: break-all; }
+.ch-file-item .f-meta { color: var(--text-muted); font-size: 0.75rem; white-space: nowrap; }
+.ch-file-item .f-remove {
+  background: none; border: none;
+  color: #dc2626;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+.ch-file-item .f-remove:hover { background: rgba(220,38,38,0.1); }
+.ch-file-item .f-extracting {
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-style: italic;
+}
+
+/* ── Toast / status ──────────────────────────────────────── */
+.ch-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1f2937;
+  color: #fff;
+  padding: 11px 18px;
+  border-radius: 10px;
+  font-size: 0.86rem;
+  font-weight: 500;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  z-index: 2000;
+  animation: chToastIn 0.25s ease;
+}
+.ch-toast.err { background: #b91c1c; }
+.ch-toast.ok  { background: #15803d; }
+@keyframes chToastIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ── Loading spinner ─────────────────────────────────────── */
+.ch-loading {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+.ch-loading i { margin-right: 8px; }
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .ch-page { padding: 1.25rem 1rem 3rem; }
+  .ch-header h1 { font-size: 1.6rem; }
+  .ch-grid { grid-template-columns: 1fr; }
+}

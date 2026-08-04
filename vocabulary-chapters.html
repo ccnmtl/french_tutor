@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vocabulary Chapters — French AI Tutor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/chapters.css" />
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">French AI Tutor</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="ch-page">
+
+    <!-- Breadcrumb -->
+    <div class="ch-breadcrumb">
+      <a href="index.html">Home</a>
+      <i class="fas fa-chevron-right"></i>
+      <span>Vocabulary Chapters</span>
+    </div>
+
+    <!-- Header -->
+    <header class="ch-header">
+      <div>
+        <h1 id="chPageTitle">Vocabulary Chapters</h1>
+        <p class="subtitle">Create vocabulary chapters with reference images, word lists and a custom prompt for the AI tutor.</p>
+      </div>
+      <div style="display:flex; gap:0.6rem; align-items:center;">
+        <!-- Role toggle (temporary; will be split later) -->
+        <div class="mode-toggle" id="modeToggle" role="tablist" aria-label="Role">
+          <button data-mode="teacher" class="active"><i class="fas fa-chalkboard-user"></i> Teacher</button>
+          <button data-mode="student"><i class="fas fa-user-graduate"></i> Student</button>
+        </div>
+        <button class="btn-primary-ch" id="chBtnNew">
+          <i class="fas fa-plus"></i> New Chapter
+        </button>
+      </div>
+    </header>
+
+    <!-- Loading -->
+    <div class="ch-loading" id="chLoading">
+      <i class="fas fa-spinner fa-spin"></i> Loading chapters…
+    </div>
+
+    <!-- Chapter list -->
+    <div class="ch-grid" id="chList" style="display:none"></div>
+
+    <!-- Empty state -->
+    <div class="ch-empty" id="chEmpty" style="display:none">
+      <i class="fas fa-book-open"></i>
+      <h3>No chapters yet</h3>
+      <p>Click <strong>New Chapter</strong> to create your first vocabulary chapter. Upload images of objects, word lists, or any reference material.</p>
+    </div>
+
+  </main>
+
+  <!-- Editor modal (Teacher only) -->
+  <div class="ch-modal-bg" id="chModal" style="display:none" role="dialog" aria-modal="true">
+    <div class="ch-modal">
+      <div class="ch-modal-head">
+        <h2 id="chModalTitle">New Chapter</h2>
+        <button class="ch-modal-close" id="chModalClose" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <form id="chForm">
+        <div class="ch-modal-body">
+
+          <div class="ch-field">
+            <label for="chFieldTitle">
+              Title <span class="hint">(required)</span>
+            </label>
+            <input id="chFieldTitle" type="text" maxlength="120" placeholder="e.g. Chapter 1 — Food vocabulary" required />
+          </div>
+
+          <div class="ch-field">
+            <label for="chFieldDesc">
+              Description <span class="hint">(optional, shown to students)</span>
+            </label>
+            <input id="chFieldDesc" type="text" maxlength="200" placeholder="A short summary of what students will practice." />
+          </div>
+
+          <div class="ch-field">
+            <label for="chFieldPrompt">
+              Chapter-specific instructions for the AI tutor
+              <span class="hint">(appended to the main prompt)</span>
+            </label>
+            <textarea id="chFieldPrompt" placeholder="e.g. Focus on food vocabulary: ask students to name items, use articles (le/la/un/une), and practice « C'est un/une… »."></textarea>
+          </div>
+
+          <div class="ch-field">
+            <label>
+              Teaching materials
+              <span class="hint">(images up to 20 MB · PDF / .docx / .txt up to 50 MB)</span>
+            </label>
+            <div class="ch-dropzone" id="chDropzone">
+              <i class="fas fa-cloud-arrow-up"></i>
+              <p><strong>Click to choose files</strong> or drag & drop here</p>
+              <p class="small">Images are auto-compressed to ≤ 1 MB (longest side 1600 px) so AI Vision can read them. PDF / Word text is extracted and sent to the AI.</p>
+              <input id="chFileInput" type="file" multiple
+                     accept=".pdf,.doc,.docx,.txt,.md,image/*"
+                     style="display:none" />
+            </div>
+            <div class="ch-file-list" id="chFileList"></div>
+          </div>
+
+        </div>
+
+        <div class="ch-modal-foot">
+          <button type="button" class="btn-secondary-ch" id="chBtnCancel">Cancel</button>
+          <button type="submit" class="btn-primary-ch" id="chBtnSave">
+            <i class="fas fa-check"></i> Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Page identity
+    window.CH_MODULE = 'vocabulary';
+    window.CH_MODE   = localStorage.getItem('ch_mode') || 'teacher';
+
+    // Mode toggle (Teacher / Student)
+    document.addEventListener('DOMContentLoaded', () => {
+      const tog = document.getElementById('modeToggle');
+      const btnNew = document.getElementById('chBtnNew');
+      function apply(mode) {
+        window.CH_MODE = mode;
+        localStorage.setItem('ch_mode', mode);
+        tog.querySelectorAll('button').forEach(b =>
+          b.classList.toggle('active', b.dataset.mode === mode));
+        btnNew.style.display = mode === 'teacher' ? '' : 'none';
+      }
+      apply(window.CH_MODE);
+      tog.addEventListener('click', e => {
+        const b = e.target.closest('button[data-mode]');
+        if (!b) return;
+        if (b.dataset.mode === window.CH_MODE) return;
+        apply(b.dataset.mode);
+        // Re-init chapter list
+        location.reload();
+      });
+    });
+  </script>
+
+  <script src="js/file-extract.js"></script>
+  <script src="js/chapters.js"></script>
+</body>
+</html>

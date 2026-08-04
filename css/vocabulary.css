@@ -1,0 +1,15 @@
+/* vocabulary.css — shares all layout styles with conversation.css */
+/* All shared styles (page layout, chat, correction panel, modal, speak button)
+   are defined in conversation.css and loaded separately via the HTML.
+   This file exists as a hook for vocabulary-specific overrides if needed. */
+
+/* Ensure the chat-column on the vocab page scrolls properly when
+   the analysis panel + chat are both visible */
+.chat-column {
+  overflow-y: auto;
+}
+
+#chatSection .chat-messages {
+  flex: 1;
+  min-height: 200px;
+}

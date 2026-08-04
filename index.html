@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>French AI Tutor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── Hero ── */
+    .hero {
+      padding: 6rem 2rem 5rem;
+      text-align: center;
+      background: radial-gradient(ellipse 90% 60% at 50% 0%,
+        rgba(74,122,181,0.18) 0%,
+        rgba(107,159,212,0.10) 45%,
+        transparent 75%),
+        linear-gradient(180deg, #eaf4ff 0%, #f0f6ff 100%);
+    }
+
+    .hero-flag {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      display: block;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #1a2744 30%, #4a7ab5 70%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 520px;
+      margin: 0 auto 2rem;
+    }
+
+    .hero-collab {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin: -1rem auto 1.8rem !important;
+      max-width: 520px;
+    }
+
+    .hero-collab strong {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    .hero-badges {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .hero-badge i {
+      color: var(--accent-blue);
+    }
+
+    /* ── Danmaku bubbles ── */
+    .danmaku-layer {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+      /* Soft fade at top & bottom so bubbles don't appear cut off */
+      -webkit-mask-image: linear-gradient(180deg,
+        transparent 0%,
+        #000 8%,
+        #000 55%,
+        transparent 90%);
+              mask-image: linear-gradient(180deg,
+        transparent 0%,
+        #000 8%,
+        #000 55%,
+        transparent 90%);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+    .bubble {
+      position: absolute;
+      right: -200px;
+      background: rgba(255,255,255,0.55);
+      border: 1px solid rgba(74,122,181,0.18);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: rgba(74,122,181,0.75);
+      white-space: nowrap;
+      animation: floatLeft linear forwards;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 2px 8px rgba(74,122,181,0.08);
+    }
+    @keyframes floatLeft {
+      0%   { transform: translateX(0);                    opacity: 0; }
+      4%   { opacity: 1; }
+      88%  { opacity: 1; }
+      100% { transform: translateX(calc(-100vw - 220px)); opacity: 0; }
+    }
+
+    /* ── Modules Grid ── */
+    .modules-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem 5rem;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-header h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-header p {
+      color: var(--text-secondary);
+    }
+
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .module-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 12px rgba(74,122,181,0.07);
+    }
+
+    .module-card p {
+      flex: 1;
+    }
+
+    .module-card .module-status {
+      margin-top: auto;
+    }
+
+    .module-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-lg);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .module-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-blue);
+      box-shadow: 0 8px 32px rgba(74,122,181,0.12);
+      text-decoration: none;
+    }
+
+    .module-card.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .module-card.disabled:hover {
+      transform: none;
+      border-color: var(--border);
+      box-shadow: none;
+    }
+
+    .module-card.conversation { --card-color: #4a7ab5; }
+    .module-card.vocabulary   { --card-color: #10b981; }
+    .module-card.pronunciation { --card-color: #f59e0b; }
+    .module-card.grammar      { --card-color: #8b5cf6; }
+
+    .module-card:hover { border-color: var(--card-color); }
+    .module-card:hover { box-shadow: 0 8px 32px rgba(var(--card-color), 0.15); }
+
+    .module-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .conversation .module-icon { background: rgba(74,122,181,0.13); color: #4a7ab5; }
+    .vocabulary .module-icon   { background: rgba(16,185,129,0.15); color: #10b981; }
+    .pronunciation .module-icon { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .grammar .module-icon      { background: rgba(139,92,246,0.15); color: #8b5cf6; }
+
+    .module-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .module-card p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 1.2rem;
+      line-height: 1.5;
+    }
+
+    .module-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .status-pill.available {
+      background: rgba(16,185,129,0.15);
+      color: #10b981;
+      border: 1px solid rgba(16,185,129,0.3);
+    }
+
+    .status-pill.coming-soon {
+      background: rgba(100,116,139,0.15);
+      color: var(--text-muted);
+      border: 1px solid rgba(100,116,139,0.2);
+    }
+
+    .module-arrow {
+      color: var(--text-muted);
+      transition: transform 0.2s, color 0.2s;
+    }
+
+    .module-card:hover .module-arrow {
+      transform: translateX(4px);
+      color: var(--text-primary);
+    }
+
+    /* ── How it works ── */
+    .how-section {
+      background: #e8f0fc;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 5rem 2rem;
+    }
+
+    .how-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .step {
+      text-align: center;
+    }
+
+    .step-number {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4a7ab5, #6b9fd4);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0 auto 1rem;
+      box-shadow: 0 4px 14px rgba(74,122,181,0.25);
+    }
+
+    .step h4 {
+      margin-bottom: 0.4rem;
+    }
+
+    .step p {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .modules-grid {
+        grid-template-columns: 1fr;
+      }
+      .steps-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        French AI Tutor
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero" style="position:relative;overflow:hidden;">
+    <div class="danmaku-layer" id="danmakuLayer"></div>
+    <div class="hero-content">
+    <h1>French AI Tutor</h1>
+    <p>A conversational French learning tool. Practice speaking, vocabulary, pronunciation, and grammar with immediate feedback on your errors.</p>
+    <p class="hero-collab">
+      <strong>Columbia French Department</strong> &amp; <strong>Columbia Engineering</strong>
+    </p>
+    <div class="hero-badges">
+      <span class="hero-badge"><i class="fas fa-microphone"></i> Voice &amp; Text</span>
+      <span class="hero-badge"><i class="fas fa-graduation-cap"></i> A1–B2 Level</span>
+      <span class="hero-badge"><i class="fas fa-check-circle"></i> Real-time Correction</span>
+    </div>
+    </div><!-- /hero-content -->
+  </section>
+
+  <!-- Modules -->
+  <section class="modules-section">
+    <div class="section-header">
+      <h2>Choose a Module</h2>
+      <p>Four modules covering different aspects of French practice.</p>
+    </div>
+
+    <div class="modules-grid">
+
+      <!-- Conversation -->
+      <a href="conversation-chapters.html" class="module-card conversation">
+        <div class="module-icon"><i class="fas fa-comments"></i></div>
+        <h3>Conversation</h3>
+        <p>Speaking · Corrections · Dialogue</p>
+        <div class="module-status">
+          <span class="status-pill available"><i class="fas fa-circle"></i> Available</span>
+          <i class="fas fa-arrow-right module-arrow"></i>
+        </div>
+      </a>
+
+      <!-- Vocabulary -->
+      <a href="vocabulary-chapters.html" class="module-card vocabulary">
+        <div class="module-icon"><i class="fas fa-images"></i></div>
+        <h3>Vocabulary</h3>
+        <p>Images · Objects · Articles</p>
+        <div class="module-status">
+          <span class="status-pill available"><i class="fas fa-circle"></i> Available</span>
+          <i class="fas fa-arrow-right module-arrow"></i>
+        </div>
+      </a>
+
+      <!-- Pronunciation -->
+      <a href="https://french-vowel-master-ou-vs-u-286685297662.us-west1.run.app/" target="_blank" rel="noopener" class="module-card pronunciation">
+        <div class="module-icon"><i class="fas fa-microphone-alt"></i></div>
+        <h3>Pronunciation</h3>
+        <p>Phonetics · Liaisons · Feedback</p>
+        <div class="module-status">
+          <span class="status-pill available"><i class="fas fa-circle"></i> Available</span>
+          <i class="fas fa-arrow-right module-arrow"></i>
+        </div>
+      </a>
+
+      <!-- Grammar -->
+      <a href="grammar.html" class="module-card grammar">
+        <div class="module-icon"><i class="fas fa-book-open"></i></div>
+        <h3>Grammar</h3>
+        <p>Conjugation · Tenses · Accords</p>
+        <div class="module-status">
+          <span class="status-pill available"><i class="fas fa-circle"></i> Available</span>
+          <i class="fas fa-arrow-right module-arrow"></i>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p class="footer-collab">
+      <strong>Columbia French Department</strong>
+      <span>&amp;</span>
+      <strong>Columbia Engineering</strong>
+    </p>
+    <p>French AI Tutor</p>
+  </footer>
+
+<script>
+(function () {
+  const WORDS = [
+    'Bonjour','Merci','S\'il vous plaît','Au revoir','Oui','Non',
+    'Excusez-moi','Pardon','Bonsoir','Bonne nuit','Comment ça va ?',
+    'Très bien','Enchanté','D\'accord','Allons-y','Voilà','Exactement',
+    'Peut-être','Bien sûr','Jamais','Toujours','Encore','Ensemble',
+    'Maintenant','Aujourd\'hui','Demain','Hier','Ici','Là-bas',
+    'Qu\'est-ce que c\'est ?','Je ne sais pas','Je comprends',
+    'Répétez','Plus lentement','Génial !','Super !','Parfait !',
+    'C\'est vrai ?','Vraiment ?','Félicitations','Bravo !',
+    'Comment t\'appelles-tu ?','J\'habite à Paris','Il fait beau',
+    'Quelle heure est-il ?','Bonne journée','À bientôt','À demain',
+    'Avec plaisir','Je t\'aime','Mon ami','Ma famille','Le café',
+    'S\'il te plaît','Un moment','Pas du tout','Un peu','Beaucoup',
+  ];
+
+  const COLORS = [
+    'rgba(74,122,181,0.12)',
+    'rgba(107,159,212,0.12)',
+    'rgba(13,158,110,0.10)',
+    'rgba(217,119,6,0.10)',
+    'rgba(124,111,212,0.12)',
+    'rgba(255,255,255,0.60)',
+  ];
+  const BORDER_COLORS = [
+    'rgba(74,122,181,0.28)',
+    'rgba(107,159,212,0.28)',
+    'rgba(13,158,110,0.22)',
+    'rgba(217,119,6,0.22)',
+    'rgba(124,111,212,0.25)',
+    'rgba(74,122,181,0.15)',
+  ];
+  const TEXT_COLORS = [
+    'rgba(74,122,181,0.85)',
+    'rgba(46,109,164,0.80)',
+    'rgba(13,158,110,0.80)',
+    'rgba(180,83,9,0.80)',
+    'rgba(109,88,192,0.80)',
+    'rgba(74,122,181,0.65)',
+  ];
+
+  const layer = document.getElementById('danmakuLayer');
+  if (!layer) return;
+
+  let wordIdx = 0;
+
+  function spawnBubble() {
+    const w = WORDS[wordIdx % WORDS.length];
+    wordIdx++;
+
+    const ci = Math.floor(Math.random() * COLORS.length);
+    const bubble = document.createElement('span');
+    bubble.className = 'bubble';
+    bubble.textContent = w;
+
+    // Random vertical position — keep bubbles in the upper portion
+    // so they don't overlap the hero text below
+    const topPct = 4 + Math.random() * 42;
+    bubble.style.top = topPct + '%';
+
+    // Random color scheme
+    bubble.style.background  = COLORS[ci];
+    bubble.style.borderColor = BORDER_COLORS[ci];
+    bubble.style.color       = TEXT_COLORS[ci];
+
+    // Random duration 10s–22s, random size variation
+    const dur   = 10 + Math.random() * 12;
+    const scale = 0.82 + Math.random() * 0.36;
+    bubble.style.animationDuration = dur + 's';
+    bubble.style.transform = `scale(${scale})`;
+    bubble.style.fontSize  = (0.72 + Math.random() * 0.22) + 'rem';
+
+    layer.appendChild(bubble);
+
+    // Remove after animation ends
+    setTimeout(() => bubble.remove(), (dur + 0.5) * 1000);
+  }
+
+  // Spawn a small initial batch
+  for (let i = 0; i < 8; i++) {
+    setTimeout(spawnBubble, Math.random() * 5000);
+  }
+
+  // Keep spawning continuously (slower cadence for a calmer feel)
+  setInterval(spawnBubble, 1400);
+})();
+</script>
+
+</body>
+</html>

@@ -3,6 +3,9 @@
 #   https://gallery.ecr.aws/docker/library/python
 FROM public.ecr.aws/docker/library/python:3.14-slim-trixie
 
+RUN apt-get update && \
+     apt-get install -y portaudio19-dev
+
 # Set the working directory in the container
 WORKDIR /app
 

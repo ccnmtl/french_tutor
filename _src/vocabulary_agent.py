@@ -2,9 +2,12 @@
 """
 French Vocabulary Recognition Agent
 Multi-Agent Architecture:
-  - Image Analysis Agent  : analyzes uploaded image, extracts objects & positions (GPT-4o Vision)
-  - Conversation Agent    : drives vocabulary practice via voice (OpenAI Realtime API)
-  - Correction Agent      : detects grammar/article/vocabulary errors, gives feedback
+  - Image Analysis Agent : analyzes uploaded image, extracts objects &
+    positions (GPT-4o Vision)
+  - Conversation Agent : drives vocabulary practice via voice (OpenAI
+    Realtime API)
+  - Correction Agent : detects grammar/article/vocabulary errors,
+    gives feedback
   - Evaluation Agent      : end-of-session performance summary
 
 Transport  : OpenAI Realtime API (WebSocket)
@@ -65,11 +68,13 @@ Return ONLY a JSON object (no markdown fences) with this exact schema:
       "article_def": "<definite article: le/la/les>",
       "article_indef": "<indefinite article: un/une/des>",
       "name_en": "<English name>",
-      "position": "<spatial position in French, e.g. 'à gauche', 'au centre', 'sur la table', 'près de la fenêtre'>",
+      "position": "<spatial position in French, e.g. 'à gauche', 'au
+      centre', 'sur la table', 'près de la fenêtre'>",
       "color_fr": "<color in French if clearly visible, or empty string>"
     }
   ],
-  "spatial_description_fr": "<description of how objects relate to each other spatially, in French, 2-3 sentences>",
+  "spatial_description_fr": "<description of how objects relate to
+  each other spatially, in French, 2-3 sentences>",
   "suggested_questions_fr": [
     "<question 1 about objects in the image, in French>",
     "<question 2>",
@@ -79,7 +84,8 @@ Return ONLY a JSON object (no markdown fences) with this exact schema:
   ]
 }
 
-Identify ALL clearly visible objects. For suggested questions, use vocabulary identification patterns like:
+Identify ALL clearly visible objects. For suggested questions, use
+vocabulary identification patterns like:
 - "Qu'est-ce qu'il y a sur la table ?"
 - "Qu'est-ce que vous voyez à gauche ?"
 - "De quelle couleur est [object] ?"
@@ -103,16 +109,21 @@ Disposition spatiale : {spatial_description_fr}
 **TON RÔLE:**
 - Parle UNIQUEMENT en français, tout le temps — jamais en anglais.
 - Garde tes réponses COURTES : 1 à 3 phrases maximum par tour.
-- Tu aides l'élève à identifier et nommer les objets en français, avec les bons articles.
+- Tu aides l'élève à identifier et nommer les objets en français, avec
+  les bons articles.
 
 **DÉBUT DE SESSION:**
-Commence par saluer brièvement l'élève, puis décris l'image en 1 phrase et pose la première question.
-Exemples de questions : "Qu'est-ce qu'il y a sur la table, à gauche ?", "Quels objets voyez-vous ?", "Qu'est-ce que vous voyez à droite ?"
+Commence par saluer brièvement l'élève, puis décris l'image en 1
+phrase et pose la première question.  Exemples de questions :
+"Qu'est-ce qu'il y a sur la table, à gauche ?", "Quels objets
+voyez-vous ?", "Qu'est-ce que vous voyez à droite ?"
 
 **STRATÉGIE PÉDAGOGIQUE — RESPECTE CET ORDRE:**
 
-1. **Si la réponse est incompréhensible ou comporte des erreurs de grammaire graves :**
-   → Demande à l'élève de répéter : "Pouvez-vous répéter, s'il vous plaît ?" ou "Je n'ai pas bien compris. Pouvez-vous répéter ?"
+1. **Si la réponse est incompréhensible ou comporte des erreurs de
+grammaire graves :**
+   → Demande à l'élève de répéter : "Pouvez-vous répéter, s'il vous
+   plaît ?" ou "Je n'ai pas bien compris. Pouvez-vous répéter ?"
 
 2. **Si après la répétition la réponse est toujours peu claire ou inattendue :**
    → Propose 2 ou 3 alternatives à choisir. Exemples :
@@ -120,48 +131,60 @@ Exemples de questions : "Qu'est-ce qu'il y a sur la table, à gauche ?", "Quels 
    "C'est le livre, le stylo ou le cahier ?"
 
 3. **Seulement si les deux stratégies ci-dessus ont échoué :**
-   → Donne la bonne réponse, puis demande immédiatement à l'élève de la répéter :
+   → Donne la bonne réponse, puis demande immédiatement à l'élève de
+   la répéter :
    "On dit 'un livre'. Pouvez-vous répéter : 'Je vois un livre' ?"
 
-**CORRECTION DES ARTICLES ET DU VOCABULAIRE:**
-- Si l'élève oublie l'article (ex : "chat" au lieu de "le chat"), corrige naturellement dans ta réponse en modélisant la forme correcte.
-- Si le vocabulaire est bon mais l'article est faux, reconnais le mot et corrige l'article : "Oui, c'est bien une chaise ! On dit 'une chaise', pas 'un chaise'."
-- Si l'élève ne connaît pas un mot, donne-lui le mot français avec son article avant de lui demander de l'utiliser.
+**CORRECTION DES ARTICLES ET DU VOCABULAIRE:** - Si l'élève oublie
+l'article (ex : "chat" au lieu de "le chat"), corrige naturellement
+dans ta réponse en modélisant la forme correcte.  - Si le vocabulaire
+est bon mais l'article est faux, reconnais le mot et corrige l'article
+: "Oui, c'est bien une chaise ! On dit 'une chaise', pas 'un chaise'."
+- Si l'élève ne connaît pas un mot, donne-lui le mot français avec son
+article avant de lui demander de l'utiliser.
 
-**CORRECTION DE LA PRONONCIATION:**
-- Si la transcription suggère une mauvaise prononciation, modèle la prononciation correcte en français : "Attention à la prononciation : on dit '[mot correct]', avec un son [description simple]."
-- Ne dis jamais explicitement "tu as fait une erreur" — modèle naturellement la forme correcte dans ta réponse.
+**CORRECTION DE LA PRONONCIATION:** - Si la transcription suggère une
+mauvaise prononciation, modèle la prononciation correcte en français :
+"Attention à la prononciation : on dit '[mot correct]', avec un son
+[description simple]."  - Ne dis jamais explicitement "tu as fait une
+erreur" — modèle naturellement la forme correcte dans ta réponse.
 
-**IMPOSITION DU FRANÇAIS:**
-- Si l'élève parle en anglais ou dans une autre langue, réponds UNIQUEMENT en français : "S'il vous plaît, répondez en français !" puis répète ta question.
-- Ne passe jamais à l'anglais, même pour expliquer la grammaire. Utilise toujours un français simple.
+**IMPOSITION DU FRANÇAIS:** - Si l'élève parle en anglais ou dans une
+autre langue, réponds UNIQUEMENT en français : "S'il vous plaît,
+répondez en français !" puis répète ta question.  - Ne passe jamais à
+l'anglais, même pour expliquer la grammaire. Utilise toujours un
+français simple.
 
-**PROGRESSION:**
-- Travaille sur les {num_objects} objets de manière systématique, en variant les types de questions.
-- Après avoir identifié un objet, pose une question complémentaire (couleur, position, objet voisin).
-- Utilise les questions suggérées suivantes (varie-les) :
-{suggested_questions_formatted}
+**PROGRESSION:** - Travaille sur les {num_objects} objets de manière
+systématique, en variant les types de questions.  - Après avoir
+identifié un objet, pose une question complémentaire (couleur,
+position, objet voisin).  - Utilise les questions suggérées suivantes
+(varie-les) : {suggested_questions_formatted}
 
 **CONTRÔLE DE SESSION:**
 - Si l'élève dit "pause" ou "une pause" → accuse réception et attends.
 - Si l'élève dit "continuer" ou "on continue" → reprends la session.
-- Si l'élève dit "terminer" ou "fin" → dis au revoir chaleureusement en français, puis émets le token exact [SESSION_END].
+- Si l'élève dit "terminer" ou "fin" → dis au revoir chaleureusement
+  en français, puis émets le token exact [SESSION_END].
 """.strip()
 
 # ──────────────────────────────────────────────
 #  Correction Agent prompt
 # ──────────────────────────────────────────────
 CORRECTION_PROMPT_TEMPLATE = """
-Tu es un correcteur expert en langue française, spécialisé dans l'usage du vocabulaire et des articles.
-Analyse l'énoncé suivant d'un élève dans le cadre d'un exercice d'identification de vocabulaire.
-Réponds UNIQUEMENT avec un objet JSON (sans balises markdown) correspondant exactement à ce schéma :
+Tu es un correcteur expert en langue française, spécialisé dans
+l'usage du vocabulaire et des articles.  Analyse l'énoncé suivant d'un
+élève dans le cadre d'un exercice d'identification de vocabulaire.
+Réponds UNIQUEMENT avec un objet JSON (sans balises markdown)
+correspondant exactement à ce schéma :
 
 {{
   "has_errors": true | false,
   "corrected": "<phrase française corrigée, ou chaîne vide si pas d'erreurs>",
   "errors": [
     {{
-      "type": "article | gender_agreement | vocabulary | pronunciation_note | word_order | missing_word",
+      "type": "article | gender_agreement | vocabulary |
+      pronunciation_note | word_order | missing_word",
       "original": "<le fragment problématique>",
       "correction": "<la forme correcte>",
       "explanation": "<explication concise en anglais, 20 mots max>"
@@ -308,15 +331,15 @@ class VocabularySession:
         self.audio_in_queue  = None
         self.audio_out_queue = None
 
-        self.paused             = False
-        self.session_ended      = False
-        self.transcript         = []
+        self.paused = False
+        self.session_ended = False
+        self.transcript = []
 
-        self.speaking           = False
-        self.recording          = False
+        self.speaking = False
+        self.recording = False
         self.assistant_speaking = True   # starts True so we wait for greeting
         self.audio_chunks_recorded = 0
-        self.ws                 = None
+        self.ws = None
 
         # Build system prompt from image analysis
         self.system_prompt = self._build_system_prompt()
@@ -628,7 +651,7 @@ class VocabularySession:
 
     # ── Entry point ──────────────────────────────
     async def run(self):
-        self.audio_in_queue  = asyncio.Queue()
+        self.audio_in_queue = asyncio.Queue()
         self.audio_out_queue = asyncio.Queue()
 
         headers = {
@@ -639,14 +662,16 @@ class VocabularySession:
         self.console.print(
             Panel(
                 Text(
-                    "🇫🇷  Agent de Vocabulaire — Reconnaissance d'Images en Français",
+                    "🇫🇷  Agent de Vocabulaire — "
+                    "Reconnaissance d'Images en Français",
                     justify="center",
                 ),
                 border_style="green",
             )
         )
         self.console.print(
-            "[dim]Commandes : [bold]'pause'[/bold] · [bold]'continuer'[/bold] · [bold]'terminer'[/bold][/dim]\n"
+            "[dim]Commandes : [bold]'pause'[/bold] · "
+            "[bold]'continuer'[/bold] · [bold]'terminer'[/bold][/dim]\n"
         )
 
         # Display image context panel
@@ -657,14 +682,16 @@ class VocabularySession:
         )
         self.console.print(
             Panel(
-                f"[bold]Scène :[/bold] {self.image_data.get('scene_description_fr', '')}\n\n"
+                "[bold]Scène :[/bold] "
+                f"{self.image_data.get('scene_description_fr', '')}\n\n"
                 f"[bold]Objets détectés :[/bold]\n{obj_display}",
                 title="🖼️  Image analysée",
                 border_style="cyan",
             )
         )
 
-        async with websockets.connect(REALTIME_URL, additional_headers=headers) as ws:
+        async with websockets.connect(
+                REALTIME_URL, additional_headers=headers) as ws:
             self.ws = ws
             await self._configure_session()
             await self._send_initial_message()
@@ -683,7 +710,8 @@ class VocabularySession:
                     t.cancel()
                 raise
 
-        self.console.print("\n[bold green]👋  Au revoir ! Bonne continuation ![/bold green]")
+        self.console.print(
+            "\n[bold green]👋  Au revoir ! Bonne continuation ![/bold green]")
         self.pya.terminate()
 
 
@@ -715,7 +743,9 @@ def main():
                 border_style="green",
             )
         )
-        console.print("[bold cyan]🖼️  Entrez le chemin de l'image :[/bold cyan] ", end="")
+        console.print(
+            "[bold cyan]🖼️  Entrez le chemin de l'image :[/bold cyan] ",
+            end="")
         image_path = input().strip().strip('"').strip("'")
 
     if not image_path:
@@ -724,7 +754,8 @@ def main():
 
     # ── Analyze image ──────────────────────────
     oai_client = OpenAI(api_key=OPENAI_API_KEY)
-    console.print(f"\n[bold yellow]🔍  Analyse de l'image : {image_path} …[/bold yellow]")
+    console.print(
+        f"\n[bold yellow]🔍  Analyse de l'image : {image_path} …[/bold yellow]")
 
     try:
         image_analysis = analyze_image(oai_client, image_path)
@@ -732,14 +763,19 @@ def main():
         console.print(f"[red]❌  {e}[/red]")
         sys.exit(1)
     except json.JSONDecodeError:
-        console.print("[red]❌  La réponse de l'analyse de l'image n'est pas du JSON valide.[/red]")
+        console.print(
+            "[red]❌  La réponse de l'analyse de "
+            "l'image n'est pas du JSON valide.[/red]"
+        )
         sys.exit(1)
     except Exception as e:
         console.print(f"[red]❌  Échec de l'analyse de l'image : {e}[/red]")
         sys.exit(1)
 
     objects = image_analysis.get("objects", [])
-    console.print(f"[green]✅  Image analysée : {len(objects)} objet(s) détecté(s)[/green]\n")
+    console.print(
+        "[green]✅  Image analysée : " +
+        f"{len(objects)} objet(s) détecté(s)[/green]\n")
 
     # ── Run vocabulary session ─────────────────
     session = VocabularySession(image_analysis)

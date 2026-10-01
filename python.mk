@@ -20,7 +20,7 @@ $(PY_SENTINAL): $(REQUIREMENTS)
 	touch $@
 
 flake8: $(PY_SENTINAL)
-	$(FLAKE8)
+	$(FLAKE8) _src
 
 clean:
 	rm -rf $(VE)

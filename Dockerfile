@@ -4,7 +4,8 @@
 FROM public.ecr.aws/docker/library/python:3.14-slim-trixie
 
 RUN apt-get update && \
-     apt-get install -y portaudio19-dev
+    apt-get install -y --no-install-recommends build-essential && \
+    apt-get install -y portaudio19-dev
 
 # Set the working directory in the container
 WORKDIR /app
@@ -12,7 +13,6 @@ WORKDIR /app
 RUN mkdir -p /tmp && chmod 1777 /tmp
 
 COPY requirements.txt .
-COPY requirements/ ./requirements/
 
 # Upgrade pip
 RUN python -m venv ve

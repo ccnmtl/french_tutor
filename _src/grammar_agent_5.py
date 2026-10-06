@@ -20,22 +20,23 @@ dotenv.load_dotenv()
 # ──────────────────────────────────────────────
 #  Audio config
 # ──────────────────────────────────────────────
-FORMAT           = pyaudio.paInt16
-CHANNELS         = 1
-SAMPLE_RATE      = 24_000
-CHUNK_SIZE       = 1_024
+FORMAT = pyaudio.paInt16
+CHANNELS = 1
+SAMPLE_RATE = 24_000
+CHUNK_SIZE = 1_024
 VOLUME_THRESHOLD = 300
 
 # ──────────────────────────────────────────────
 #  OpenAI config
 #  Set OPENAI_API_KEY in a .env file or as an environment variable
 # ──────────────────────────────────────────────
-REALTIME_URL     = "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview"
-OPENAI_API_KEY   = os.environ.get("OPENAI_API_KEY", "")
+REALTIME_URL = "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview"
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 CORRECTION_MODEL = "gpt-4o"
 EVALUATION_MODEL = "gpt-4o"
 
-MAX_CORRECTION_STAGES = 3   # ask to repeat → suggest alternatives → give answer
+# ask to repeat → suggest alternatives → give answer
+MAX_CORRECTION_STAGES = 3
 
 
 # ══════════════════════════════════════════════
@@ -73,7 +74,8 @@ BUILTIN_EXERCISES = [
             {
                 "prompt": "deux jours / tu / forêt / faire du camping",
                 "expected_answer":
-                    "Il y a deux jours, tu es allé(e) en forêt faire du camping.",
+                    "Il y a deux jours, tu es allé(e) en "
+                    "forêt faire du camping.",
                 "grammar_focus":
                     "il y a + passé composé être, accord selon le genre"
             },
@@ -693,8 +695,8 @@ BUILTIN_EXERCISES = [
 #  Conversation Agent system prompt template
 # ──────────────────────────────────────────────
 CONVERSATION_SYSTEM_PROMPT_TEMPLATE = """
-Tu es un professeur de français qui fait pratiquer la grammaire à un élève par des
-exercices structurés à l'oral.
+Tu es un professeur de français qui fait pratiquer la grammaire à un
+élève par des exercices structurés à l'oral.
 
 **EXERCICE EN COURS:**
 Titre : {exercise_title}
@@ -714,7 +716,8 @@ Réponse attendue : {modele_answer}
 - Parle UNIQUEMENT en français, tout le temps — jamais en anglais.
 - Garde tes réponses COURTES : 1 à 3 phrases maximum par tour.
 - Tu guides l'élève à travers chaque élément de l'exercice, un par un.
-- Insiste sur la prononciation correcte, surtout des formes grammaticales ciblées.
+- Insiste sur la prononciation correcte, surtout des formes
+  grammaticales ciblées.
 
 **DÉBUT DE SESSION:**
 1. Salue brièvement l'élève.
@@ -725,16 +728,17 @@ Réponse attendue : {modele_answer}
 **STRATÉGIE DE CORRECTION (RESPECTE CET ORDRE STRICT):**
 
 Étape 1 — DEMANDER DE RÉPÉTER :
-Si la réponse de l'élève est grammaticalement incorrecte, incomplète, ou incompréhensible,
-demande-lui de répéter en soulignant le mot/la forme incorrecte.
+Si la réponse de l'élève est grammaticalement incorrecte, incomplète,
+ou incompréhensible, demande-lui de répéter en soulignant le mot/la
+forme incorrecte.
 Exemples :
 - "Attention, c'est 'dormis' ? Essayez encore."
 - "Presque ! Réfléchissez à la conjugaison du verbe. Essayez encore."
 - "Attention à la forme du verbe. Répétez, s'il vous plaît."
 
 Étape 2 — PROPOSER DES ALTERNATIVES :
-Si après la répétition, la réponse est toujours incorrecte, propose 2-3 alternatives
-et demande à l'élève de choisir la bonne.
+Si après la répétition, la réponse est toujours incorrecte, propose
+2-3 alternatives et demande à l'élève de choisir la bonne.
 Exemples :
 - "C'est 'dors' ou 'dormis' ?"
 - "On dit 'Faites attention' ou 'Faisez attention' ?"
@@ -745,16 +749,19 @@ Seulement si les étapes 1 et 2 ont échoué, donne la bonne réponse et demande
 l'élève de la répéter après toi.
 Exemples :
 - "La bonne réponse est : 'Faites attention aux clients !' Répétez après moi."
-- "On dit : 'Il y a un mois, Fabrice est allé à la plage.' Répétez, s'il vous plaît."
+- "On dit : 'Il y a un mois, Fabrice est allé à la plage.' Répétez,
+  s'il vous plaît."
 
 **APRÈS UNE RÉPONSE CORRECTE:**
 - Confirme brièvement : "Très bien !", "Parfait !", "Excellent !"
-- Si la prononciation n'est pas parfaite, modèle la forme correcte naturellement.
+- Si la prononciation n'est pas parfaite, modèle la forme correcte
+  naturellement.
 - Passe immédiatement à l'élément suivant.
 
 **CORRECTION DE LA PRONONCIATION:**
 - Insiste sur la prononciation des formes grammaticales ciblées.
-- Si la transcription suggère une mauvaise prononciation, modèle la prononciation correcte.
+- Si la transcription suggère une mauvaise prononciation, modèle la
+  prononciation correcte.
 - "Attention à la prononciation : on dit '[forme correcte]'."
 
 **IMPOSITION DU FRANÇAIS:**
@@ -763,19 +770,22 @@ Exemples :
 
 **PROGRESSION:**
 - Travaille sur chaque élément dans l'ordre.
-- Quand tous les éléments originaux sont terminés, passe aux éléments supplémentaires.
-- Après le dernier élément, félicite l'élève et demande s'il veut continuer avec
-  un autre exercice ou terminer.
+- Quand tous les éléments originaux sont terminés, passe aux éléments
+  supplémentaires.
+- Après le dernier élément, félicite l'élève et demande s'il veut
+  continuer avec un autre exercice ou terminer.
 
 **SUIVI INTERNE:**
 - Garde en mémoire l'élément en cours (numéro).
-- Garde en mémoire le stade de correction (étape 1, 2 ou 3) pour l'élément en cours.
+- Garde en mémoire le stade de correction (étape 1, 2 ou 3) pour
+  l'élément en cours.
 - Réinitialise le stade de correction quand tu passes à un nouvel élément.
 
 **CONTRÔLE DE SESSION:**
 - Si l'élève dit "pause" ou "une pause" → accuse réception et attends.
 - Si l'élève dit "continuer" ou "on continue" → reprends la session.
-- Si l'élève dit "terminer" ou "fin" → dis au revoir chaleureusement en français,
+- Si l'élève dit "terminer" ou "fin" → dis au revoir chaleureusement
+  en français,
   puis émets le token exact [SESSION_END].
 """.strip()
 
@@ -786,9 +796,11 @@ CORRECTION_PROMPT_TEMPLATE = """
 Tu es un correcteur expert en langue française, spécialisé dans la grammaire
 (temps, conjugaisons, prépositions, accords) pour les élèves de niveau A1-A2.
 
-Analyse l'énoncé de l'élève ci-dessous dans le cadre d'un exercice de grammaire.
+Analyse l'énoncé de l'élève ci-dessous dans le cadre d'un exercice de
+grammaire.
 L'exercice porte sur : {grammar_targets}
-La réponse attendue (ou une réponse similaire acceptable) est : {expected_answer}
+La réponse attendue (ou une réponse similaire acceptable) est :
+{expected_answer}
 
 Réponds UNIQUEMENT avec un objet JSON (sans balises markdown) correspondant
 exactement à ce schéma :
@@ -799,15 +811,19 @@ exactement à ce schéma :
   "error_stage": "repeat | suggest_alternatives | give_answer",
   "errors": [
     {{
-      "type": "conjugation | tense | agreement | preposition | word_order | vocabulary | pronunciation_note | missing_word | extra_word",
+      "type": "conjugation | tense | agreement | preposition |
+      word_order | vocabulary | pronunciation_note | missing_word |
+      extra_word",
       "original": "<le fragment problématique>",
       "correction": "<la forme correcte>",
       "explanation": "<explication concise en anglais, 20 mots max>",
-      "phonetic_hint": "<guide phonétique optionnel pour les erreurs de prononciation>"
+      "phonetic_hint": "<guide phonétique optionnel pour les erreurs
+      de prononciation>"
     }}
   ],
   "grammar_score": 0-5,
-  "pronunciation_focus": "<un point clé de prononciation à travailler, ou chaîne vide>",
+  "pronunciation_focus": "<un point clé de prononciation à travailler,
+  ou chaîne vide>",
   "encouragement": "<une courte phrase d'encouragement en anglais>"
 }}
 
@@ -832,7 +848,8 @@ Pour "error_stage":
 # ──────────────────────────────────────────────
 EVALUATION_PROMPT_TEMPLATE = """
 You are a French language assessor evaluating a grammar practice session.
-Based on the full session transcript below, write a concise performance report in English.
+Based on the full session transcript below, write a concise
+performance report in English.
 
 The exercises focused on: {grammar_targets}
 
@@ -862,8 +879,8 @@ Transcript:
 #  Correction Agent
 # ══════════════════════════════════════════════
 async def run_correction_agent(client: OpenAI, utterance: str,
-                                grammar_targets: str,
-                                expected_answer: str) -> dict:
+                               grammar_targets: str,
+                               expected_answer: str) -> dict:
     prompt = CORRECTION_PROMPT_TEMPLATE.format(
         utterance=utterance,
         grammar_targets=grammar_targets,
@@ -879,7 +896,8 @@ async def run_correction_agent(client: OpenAI, utterance: str,
         raw = resp.choices[0].message.content.strip()
         if raw.startswith("```"):
             lines = raw.split("\n")
-            raw = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
+            raw = "\n".join(
+                lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
             if raw.startswith("json"):
                 raw = raw[4:].strip()
         return json.loads(raw)
@@ -891,7 +909,7 @@ async def run_correction_agent(client: OpenAI, utterance: str,
 #  Evaluation Agent
 # ══════════════════════════════════════════════
 async def run_evaluation_agent(client: OpenAI, transcript: list,
-                                grammar_targets: str) -> str:
+                               grammar_targets: str) -> str:
     transcript_text = "\n".join(
         f"[{t['role'].upper()}] {t['text']}" for t in transcript
     )
@@ -917,33 +935,33 @@ async def run_evaluation_agent(client: OpenAI, transcript: list,
 class GrammarSession:
 
     def __init__(self, exercises: list):
-        self.console    = Console()
-        self.pya        = pyaudio.PyAudio()
+        self.console = Console()
+        self.pya = pyaudio.PyAudio()
         self.oai_client = OpenAI(api_key=OPENAI_API_KEY)
-        self.exercises  = exercises
+        self.exercises = exercises
 
         self.current_exercise_idx = 0
-        self.current_exercise     = exercises[0]
+        self.current_exercise = exercises[0]
 
-        self.audio_in_queue  = None
+        self.audio_in_queue = None
         self.audio_out_queue = None
 
-        self.paused              = False
-        self.session_ended       = False
-        self.transcript          = []
+        self.paused = False
+        self.session_ended = False
+        self.transcript = []
 
-        self.speaking            = False
-        self.recording           = False
-        self.assistant_speaking  = True
+        self.speaking = False
+        self.recording = False
+        self.assistant_speaking = True
         self.audio_chunks_recorded = 0
-        self.ws                  = None
+        self.ws = None
 
-        self.current_item_idx    = 0
-        self.correction_stage    = 0
-        self.repeat_requested    = False
+        self.current_item_idx = 0
+        self.correction_stage = 0
+        self.repeat_requested = False
 
         self._build_all_items()
-        self.system_prompt       = self._build_system_prompt()
+        self.system_prompt = self._build_system_prompt()
         self.grammar_targets_str = ", ".join(
             self.current_exercise.get("grammar_targets", [])
         )
@@ -955,7 +973,8 @@ class GrammarSession:
 
     def _get_current_expected_answer(self) -> str:
         if self.current_item_idx < len(self.all_items):
-            return self.all_items[self.current_item_idx].get("expected_answer", "")
+            return self.all_items[
+                self.current_item_idx].get("expected_answer", "")
         return ""
 
     def _build_system_prompt(self) -> str:
@@ -983,7 +1002,8 @@ class GrammarSession:
             context_description_fr=ex.get("context_description_fr", ""),
             grammar_targets=grammar_targets,
             background_notes=ex.get("background_notes", "")
-                + ("\nPrononciation : " + pronunciation_targets if pronunciation_targets else ""),
+            + ("\nPrononciation : " +
+               pronunciation_targets if pronunciation_targets else ""),
             modele_prompt=modele.get("prompt", ""),
             modele_answer=modele.get("expected_answer", ""),
             items_formatted="\n".join(items_lines),
@@ -1001,7 +1021,8 @@ class GrammarSession:
                 "voice": "shimmer",
                 "input_audio_format": "pcm16",
                 "output_audio_format": "pcm16",
-                "input_audio_transcription": {"model": "whisper-1", "language": "fr"},
+                "input_audio_transcription": {
+                    "model": "whisper-1", "language": "fr"},
                 "turn_detection": None,
                 "temperature": 0.8,
             },
@@ -1016,8 +1037,9 @@ class GrammarSession:
                 "role": "user",
                 "content": [{
                     "type": "input_text",
-                    "text": "Bonjour ! Commencez la session de grammaire maintenant. "
-                            "Présentez l'exercice et donnez le modèle.",
+                    "text": "Bonjour ! Commencez la session "
+                    "de grammaire maintenant. "
+                    "Présentez l'exercice et donnez le modèle.",
                 }],
             },
         })
@@ -1112,7 +1134,9 @@ class GrammarSession:
                 pass
 
             self.console.print(
-                "\n[bold cyan]🟢 Appuyez sur ENTRÉE pour parler...[/bold cyan]", end=""
+                "\n[bold cyan]🟢 Appuyez sur ENTRÉE "
+                "pour parler...[/bold cyan]",
+                end=""
             )
             try:
                 await asyncio.to_thread(input)
@@ -1125,7 +1149,8 @@ class GrammarSession:
             self.recording = True
             self.audio_chunks_recorded = 0
             self.console.print(
-                "🔴 [bold red]Enregistrement... Appuyez sur ENTRÉE pour terminer.[/bold red]",
+                "🔴 [bold red]Enregistrement... Appuyez "
+                "sur ENTRÉE pour terminer.[/bold red]",
                 end=""
             )
             try:
@@ -1136,7 +1161,8 @@ class GrammarSession:
             self.recording = False
 
             if self.audio_chunks_recorded < 3:
-                self.console.print("\n[yellow]⚠️  Trop court — réessayez.[/yellow]")
+                self.console.print(
+                    "\n[yellow]⚠️  Trop court — réessayez.[/yellow]")
                 continue
 
             self.console.print("\n⏳ [dim]Traitement…[/dim]")
@@ -1155,19 +1181,30 @@ class GrammarSession:
                 pcm = base64.b64decode(event["delta"])
                 await self.audio_out_queue.put(pcm)
 
-            elif etype == "conversation.item.input_audio_transcription.completed":
+            elif (
+                    etype ==
+                    "conversation.item.input_audio_transcription.completed"
+            ):
                 utterance = event.get("transcript", "").strip()
                 if utterance:
-                    self.console.print(f"\n👤 [bold cyan]Élève:[/bold cyan] {utterance}")
-                    self.transcript.append({"role": "student", "text": utterance})
+                    self.console.print(
+                        f"\n👤 [bold cyan]Élève:[/bold cyan] {utterance}")
+                    self.transcript.append({
+                        "role": "student", "text": utterance})
 
                     lower = utterance.lower()
-                    if any(w in lower for w in ["pause", "une pause", "arrêt"]):
+                    if any(w in lower for w in [
+                            "pause", "une pause", "arrêt"]):
                         self.paused = True
                         self.console.print(
-                            "⏸️  [yellow]En pause. Dites 'continuer' pour reprendre.[/yellow]"
+                            "⏸️  [yellow]En pause. "
+                            "Dites 'continuer' pour reprendre.[/yellow]"
                         )
-                    elif any(w in lower for w in ["continuer", "on continue", "reprendre"]) and self.paused:
+                    elif any(
+                            w in lower for w in [
+                                "continuer", "on continue", "reprendre"
+                            ]
+                    ) and self.paused:
                         self.paused = False
                         self.console.print("▶️  [green]Reprise.[/green]")
 
@@ -1182,7 +1219,8 @@ class GrammarSession:
                 if tutor_text_buffer:
                     tutor_text = "".join(tutor_text_buffer).strip()
                     tutor_text_buffer.clear()
-                    self.transcript.append({"role": "tutor", "text": tutor_text})
+                    self.transcript.append({
+                        "role": "tutor", "text": tutor_text})
                     self.console.print(
                         Panel(
                             Markdown(tutor_text),
@@ -1236,9 +1274,12 @@ class GrammarSession:
                 instruction = (
                     "[CORRECTION STAGE 1 - ASK TO REPEAT] "
                     "The student made errors. Errors: {}. "
-                    "Ask the student to try again, focusing on the incorrect word(s). "
-                    "Do NOT give the answer yet. Highlight what's wrong and encourage "
-                    "them to self-correct. Example: 'Attention, c'est \"dormis\" ? "
+                    "Ask the student to try again, "
+                    "focusing on the incorrect word(s). "
+                    "Do NOT give the answer yet. Highlight "
+                    "what's wrong and encourage "
+                    "them to self-correct. Example: "
+                    "'Attention, c'est \"dormis\" ? "
                     "Réfléchissez à la conjugaison. Essayez encore.'"
                 ).format(errors_detail)
 
@@ -1247,17 +1288,21 @@ class GrammarSession:
                     "[CORRECTION STAGE 2 - SUGGEST ALTERNATIVES] "
                     "The student still has errors after retrying. Errors: {}. "
                     "The correct answer is: '{}'. "
-                    "Now propose 2-3 alternatives (including the correct one) and "
-                    "ask the student to choose. Example: \"C'est 'dors' ou 'dormis' ?\" "
+                    "Now propose 2-3 alternatives "
+                    "(including the correct one) and "
+                    "ask the student to choose. "
+                    "Example: \"C'est 'dors' ou 'dormis' ?\" "
                     "Do NOT give away which is correct — let them choose."
                 ).format(errors_detail, corrected)
 
             else:
                 instruction = (
                     "[CORRECTION STAGE 3 - GIVE ANSWER] "
-                    "The student has failed twice. Give the correct answer now: '{}'. "
+                    "The student has failed twice. "
+                    "Give the correct answer now: '{}'. "
                     "Say it clearly and ask the student to repeat after you. "
-                    "Example: 'La bonne réponse est : \"{}\". Répétez après moi.'{}"
+                    "Example: 'La bonne réponse est "
+                    ": \"{}\". Répétez après moi.'{}"
                 ).format(
                     corrected, corrected,
                     " Pronunciation focus: {}.".format(pron) if pron else ""
@@ -1282,8 +1327,10 @@ class GrammarSession:
 
             if self.current_item_idx >= len(self.all_items):
                 instruction += (
-                    " All exercise items are completed! Congratulate the student "
-                    "and ask if they want to continue with another exercise or end."
+                    " All exercise items are completed! "
+                    "Congratulate the student "
+                    "and ask if they want to continue with "
+                    "another exercise or end."
                 )
 
         if instruction:
@@ -1327,15 +1374,20 @@ class GrammarSession:
 
         grammar_score = result.get("grammar_score", "")
         if grammar_score != "":
-            lines.append("\n📊 **Score grammaire :** {} / 5".format(grammar_score))
+            lines.append(
+                "\n📊 **Score grammaire :** {} / 5".format(grammar_score))
 
         if result.get("pronunciation_focus"):
             lines.append("\n🔊 **Prononciation à travailler :** {}".format(
                 result["pronunciation_focus"]
             ))
 
-        stage_labels = {0: "Nouvel élément", 1: "Étape 1 — Répéter",
-                        2: "Étape 2 — Alternatives", 3: "Étape 3 — Réponse donnée"}
+        stage_labels = {
+            0: "Nouvel élément",
+            1: "Étape 1 — Répéter",
+            2: "Étape 2 — Alternatives",
+            3: "Étape 3 — Réponse donnée"
+        }
         stage_label = stage_labels.get(
             self.correction_stage + 1, "Correction"
         )
@@ -1350,7 +1402,8 @@ class GrammarSession:
 
     async def _end_session(self):
         self.console.print(
-            "\n[bold magenta]⏳  Génération du rapport de session…[/bold magenta]"
+            "\n[bold magenta]⏳  Génération du rapport "
+            "de session…[/bold magenta]"
         )
         try:
             report = await run_evaluation_agent(
@@ -1364,10 +1417,11 @@ class GrammarSession:
                 )
             )
         except Exception as e:
-            self.console.print(f"[red]Evaluation Agent error: {e}[/red]")
+            self.console.print(
+                f"[red]Evaluation Agent error: {e}[/red]")
 
     async def run(self):
-        self.audio_in_queue  = asyncio.Queue()
+        self.audio_in_queue = asyncio.Queue()
         self.audio_out_queue = asyncio.Queue()
 
         headers = {
@@ -1378,14 +1432,16 @@ class GrammarSession:
         self.console.print(
             Panel(
                 Text(
-                    "🇫🇷  Agent de Grammaire — Exercices Structurés en Français",
+                    "🇫🇷  Agent de Grammaire — Exercices "
+                    "Structurés en Français",
                     justify="center",
                 ),
                 border_style="green",
             )
         )
         self.console.print(
-            "[dim]Commandes : [bold]'pause'[/bold] · [bold]'continuer'[/bold] · "
+            "[dim]Commandes : [bold]'pause'[/bold] "
+            "· [bold]'continuer'[/bold] · "
             "[bold]'terminer'[/bold][/dim]\n"
         )
 
@@ -1399,15 +1455,18 @@ class GrammarSession:
                 f"[bold]Exercice :[/bold] {ex.get('exercise_title', '')}\n"
                 f"[bold]Type :[/bold] {ex.get('exercise_type', '')}\n"
                 f"[bold]Grammaire ciblée :[/bold] {grammar_targets}\n"
-                f"[bold]Contexte :[/bold] {ex.get('context_description_fr', '')}\n"
-                f"[bold]Modèle :[/bold] {modele.get('prompt', '')} → {modele.get('expected_answer', '')}\n"
+                "[bold]Contexte :[/bold] "
+                f"{ex.get('context_description_fr', '')}\n"
+                f"[bold]Modèle :[/bold] {modele.get('prompt', '')} "
+                f"→ {modele.get('expected_answer', '')}\n"
                 f"[bold]Nombre d'éléments :[/bold] {num_items}",
                 title="📖 Exercice chargé",
                 border_style="cyan",
             )
         )
 
-        async with websockets.connect(REALTIME_URL, additional_headers=headers) as ws:
+        async with websockets.connect(
+                REALTIME_URL, additional_headers=headers) as ws:
             self.ws = ws
             await self._configure_session()
             await self._send_initial_message()
@@ -1461,7 +1520,8 @@ def main():
         )
     )
     console.print(
-        f"[bold green]🎲  Exercice sélectionné : {selected['exercise_title']}[/bold green]\n"
+        "[bold green]🎲  Exercice sélectionné "
+        f": {selected['exercise_title']}[/bold green]\n"
     )
 
     # ── Run grammar session ───────────────────

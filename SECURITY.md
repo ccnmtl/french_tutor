@@ -5,7 +5,7 @@
 - **No API key is committed to this repository.**
 - The web app asks each user for their own OpenAI key on first visit and stores
   it in that browser's `localStorage` only.
-- The Python reference programs in `_src/` read the key from the
+- The Python reference programs in `french_tutor/` read the key from the
   `OPENAI_API_KEY` environment variable.
 
 If you find a key in the git history, please open an issue (or a private

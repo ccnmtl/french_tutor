@@ -37,7 +37,7 @@ jobs:
             -e OIDC_CLIENT_ID=ctl-french_tutor \
             -e OIDC_CLIENT_SECRET=local-dev-only-not-a-real-secret \
             french_tutor:ci \
-            gunicorn --bind 0.0.0.0:8080 --workers 1 --threads 4 --timeout 120 app:app
+            ./ve/bin/gunicorn french_tutor.french_tutor_3:application --worker-class asgi --bind 0.0.0.0:8080
           for i in $(seq 1 60); do
             if curl -sf -o /dev/null http://localhost:8000/api/health; then
               echo "image serves /api/health after ${i}s"

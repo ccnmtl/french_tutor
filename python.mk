@@ -20,7 +20,7 @@ $(PY_SENTINAL): $(REQUIREMENTS)
 	touch $@
 
 flake8: $(PY_SENTINAL)
-	$(FLAKE8) _src
+	$(FLAKE8) french_tutor
 
 clean:
 	rm -rf $(VE)

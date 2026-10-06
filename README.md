@@ -20,11 +20,11 @@ On first visit you will be asked for your OpenAI API key. It is stored only
 in your browser (`localStorage`), never uploaded anywhere except directly to
 `api.openai.com`.
 
-For the `_src/*.py` reference programs, set the key via env var:
+For the `french_tutor/*.py` reference programs, set the key via env var:
 
 ```bash
 export OPENAI_API_KEY="sk-..."
-python3 _src/french_tutor_3.py
+python3 french_tutor/french_tutor_3.py
 ```
 
 ---
@@ -209,7 +209,7 @@ js/
   conversation.js                 — conversation module
   vocabulary.js                   — vocabulary module
   grammar.js                      — grammar module
-_src/
+french_tutor/
   french_tutor_3.py               — original Python reference
   vocabulary_agent.py             — original Python reference
   grammar_agent_5.py              — original Python reference

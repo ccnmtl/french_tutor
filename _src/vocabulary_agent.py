@@ -37,19 +37,19 @@ dotenv.load_dotenv()
 # ──────────────────────────────────────────────
 #  Audio config
 # ──────────────────────────────────────────────
-FORMAT           = pyaudio.paInt16
-CHANNELS         = 1
-SAMPLE_RATE      = 24_000
-CHUNK_SIZE       = 1_024
+FORMAT = pyaudio.paInt16
+CHANNELS = 1
+SAMPLE_RATE = 24_000
+CHUNK_SIZE = 1_024
 VOLUME_THRESHOLD = 300
 
 # ──────────────────────────────────────────────
 #  OpenAI config
 #  Set OPENAI_API_KEY in a .env file or as an environment variable
 # ──────────────────────────────────────────────
-REALTIME_URL     = "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview"
-OPENAI_API_KEY   = os.environ.get("OPENAI_API_KEY", "")
-VISION_MODEL     = "gpt-4o"
+REALTIME_URL = "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview"
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+VISION_MODEL = "gpt-4o"
 CORRECTION_MODEL = "gpt-4o"
 EVALUATION_MODEL = "gpt-4o"
 
@@ -125,7 +125,8 @@ grammaire graves :**
    → Demande à l'élève de répéter : "Pouvez-vous répéter, s'il vous
    plaît ?" ou "Je n'ai pas bien compris. Pouvez-vous répéter ?"
 
-2. **Si après la répétition la réponse est toujours peu claire ou inattendue :**
+2. **Si après la répétition la réponse est toujours peu claire ou
+inattendue :**
    → Propose 2 ou 3 alternatives à choisir. Exemples :
    "Est-ce que vous voyez une chaise, une table ou une lampe ?"
    "C'est le livre, le stylo ou le cahier ?"
@@ -208,8 +209,9 @@ Porte une attention particulière à :
 # ──────────────────────────────────────────────
 EVALUATION_PROMPT_TEMPLATE = """
 You are a French language assessor evaluating a vocabulary recognition session.
-Based on the full session transcript below, write a concise performance report in English.
-Structure it as markdown with these sections:
+Based on the full session transcript below, write a concise
+performance report in English.  Structure it as markdown with these
+sections:
 
 ## Session Summary
 ## Vocabulary Performance 📚
@@ -229,7 +231,10 @@ Transcript:
 #  Image Analysis Agent
 # ══════════════════════════════════════════════
 def analyze_image(client: OpenAI, image_path: str) -> dict:
-    """Analyze image using GPT-4o vision and extract French vocabulary context."""
+    """
+    Analyze image using GPT-4o vision and extract French vocabulary
+    context.
+    """
 
     image_path = pathlib.Path(image_path)
     if not image_path.exists():
@@ -238,7 +243,8 @@ def analyze_image(client: OpenAI, image_path: str) -> dict:
     suffix = image_path.suffix.lower()
     mime_map = {
         ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
-        ".png": "image/png", ".gif": "image/gif", ".webp": "image/webp"
+        ".png": "image/png", ".gif": "image/gif",
+        ".webp": "image/webp"
     }
     mime_type = mime_map.get(suffix, "image/jpeg")
 
@@ -254,7 +260,8 @@ def analyze_image(client: OpenAI, image_path: str) -> dict:
                     {"type": "text", "text": IMAGE_ANALYSIS_PROMPT},
                     {
                         "type": "image_url",
-                        "image_url": {"url": f"data:{mime_type};base64,{image_data}"},
+                        "image_url": {
+                            "url": f"data:{mime_type};base64,{image_data}"},
                     },
                 ],
             }
@@ -267,7 +274,8 @@ def analyze_image(client: OpenAI, image_path: str) -> dict:
     # Strip markdown code fences if present
     if raw.startswith("```"):
         lines = raw.split("\n")
-        raw = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
+        raw = "\n".join(
+            lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
         if raw.startswith("json"):
             raw = raw[4:].strip()
 
@@ -289,7 +297,8 @@ async def run_correction_agent(client: OpenAI, utterance: str) -> dict:
         raw = resp.choices[0].message.content.strip()
         if raw.startswith("```"):
             lines = raw.split("\n")
-            raw = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
+            raw = "\n".join(
+                lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
             if raw.startswith("json"):
                 raw = raw[4:].strip()
         return json.loads(raw)
@@ -323,12 +332,12 @@ async def run_evaluation_agent(client: OpenAI, transcript: list[dict]) -> str:
 class VocabularySession:
 
     def __init__(self, image_analysis: dict):
-        self.console    = Console()
-        self.pya        = pyaudio.PyAudio()
+        self.console = Console()
+        self.pya = pyaudio.PyAudio()
         self.oai_client = OpenAI(api_key=OPENAI_API_KEY)
         self.image_data = image_analysis
 
-        self.audio_in_queue  = None
+        self.audio_in_queue = None
         self.audio_out_queue = None
 
         self.paused = False
@@ -346,10 +355,11 @@ class VocabularySession:
 
     # ── Build system prompt from image data ─────
     def _build_system_prompt(self) -> str:
-        data    = self.image_data
+        data = self.image_data
         objects = data.get("objects", [])
 
-        # Format objects list: "le livre (à gauche), une lampe (au centre), ..."
+        # Format objects list: "le livre (à gauche), une lampe (au
+        # centre), ..."
         objects_list = ", ".join(
             f"{o['article_def']} {o['name_fr']} ({o['position']})"
             for o in objects
@@ -381,7 +391,8 @@ class VocabularySession:
                 "input_audio_format": "pcm16",
                 "output_audio_format": "pcm16",
                 # Whisper transcription in French
-                "input_audio_transcription": {"model": "whisper-1", "language": "fr"},
+                "input_audio_transcription": {
+                    "model": "whisper-1", "language": "fr"},
                 # Manual push-to-talk — no auto turn detection
                 "turn_detection": None,
                 "temperature": 0.8,
@@ -505,7 +516,9 @@ class VocabularySession:
                 pass
 
             self.console.print(
-                "\n[bold cyan]🟢 Appuyez sur ENTRÉE pour parler...[/bold cyan]", end=""
+                "\n[bold cyan]🟢 Appuyez sur ENTRÉE pour "
+                "parler...[/bold cyan]",
+                end=""
             )
             try:
                 await asyncio.to_thread(input)
@@ -518,7 +531,8 @@ class VocabularySession:
             self.recording = True
             self.audio_chunks_recorded = 0
             self.console.print(
-                "🔴 [bold red]Enregistrement... Appuyez sur ENTRÉE pour terminer.[/bold red]",
+                "🔴 [bold red]Enregistrement... Appuyez sur "
+                "ENTRÉE pour terminer.[/bold red]",
                 end=""
             )
             try:
@@ -529,7 +543,8 @@ class VocabularySession:
             self.recording = False
 
             if self.audio_chunks_recorded < 3:
-                self.console.print("\n[yellow]⚠️  Trop court — réessayez.[/yellow]")
+                self.console.print(
+                    "\n[yellow]⚠️  Trop court — réessayez.[/yellow]")
                 continue
 
             self.console.print("\n⏳ [dim]Traitement…[/dim]")
@@ -554,19 +569,32 @@ class VocabularySession:
                 await self.audio_out_queue.put(pcm)
 
             # Student transcript via Whisper
-            elif etype == "conversation.item.input_audio_transcription.completed":
+            elif (
+                    etype ==
+                    "conversation.item.input_audio_transcription.completed"
+            ):
                 utterance = event.get("transcript", "").strip()
                 if utterance:
-                    self.console.print(f"\n👤 [bold cyan]Élève:[/bold cyan] {utterance}")
-                    self.transcript.append({"role": "student", "text": utterance})
+                    self.console.print(
+                        f"\n👤 [bold cyan]Élève:[/bold cyan] {utterance}")
+                    self.transcript.append({
+                        "role": "student",
+                        "text": utterance
+                    })
 
                     lower = utterance.lower()
-                    if any(w in lower for w in ["pause", "une pause", "arrêt"]):
+                    if any(w in lower for w in [
+                            "pause", "une pause", "arrêt"]):
                         self.paused = True
                         self.console.print(
-                            "⏸️  [yellow]En pause. Dites 'continuer' pour reprendre.[/yellow]"
+                            "⏸️  [yellow]En pause. Dites 'continuer' "
+                            "pour reprendre.[/yellow]"
                         )
-                    elif any(w in lower for w in ["continuer", "on continue", "reprendre"]) and self.paused:
+                    elif (
+                            any(w in lower for w in [
+                                "continuer", "on continue", "reprendre"
+                            ]) and self.paused
+                    ):
                         self.paused = False
                         self.console.print("▶️  [green]Reprise.[/green]")
 
@@ -582,7 +610,10 @@ class VocabularySession:
                 if tutor_text_buffer:
                     tutor_text = "".join(tutor_text_buffer).strip()
                     tutor_text_buffer.clear()
-                    self.transcript.append({"role": "tutor", "text": tutor_text})
+                    self.transcript.append({
+                        "role": "tutor",
+                        "text": tutor_text
+                    })
                     self.console.print(
                         Panel(
                             Markdown(tutor_text),
@@ -611,7 +642,8 @@ class VocabularySession:
 
         if not result.get("has_errors"):
             self.console.print(
-                f"  ✅ [green]{result.get('encouragement', 'Excellent français!')}[/green]"
+                "  ✅ [green]"
+                f"{result.get('encouragement', 'Excellent français!')}[/green]"
             )
             return
 
@@ -621,7 +653,8 @@ class VocabularySession:
         for err in result.get("errors", []):
             label = err["type"].replace("_", " ").title()
             lines.append(
-                f"- **{label}** : `{err['original']}` → `{err['correction']}` — {err['explanation']}"
+                f"- **{label}** : `{err['original']}` →"
+                f"`{err['correction']}` — {err['explanation']}"
             )
 
         self.console.print(
@@ -635,10 +668,12 @@ class VocabularySession:
     # ── End-of-session evaluation ────────────────
     async def _end_session(self):
         self.console.print(
-            "\n[bold magenta]⏳  Génération du rapport de session…[/bold magenta]"
+            "\n[bold magenta]⏳  Génération du "
+            "rapport de session…[/bold magenta]"
         )
         try:
-            report = await run_evaluation_agent(self.oai_client, self.transcript)
+            report = await run_evaluation_agent(
+                self.oai_client, self.transcript)
             self.console.print(
                 Panel(
                     Markdown(report),

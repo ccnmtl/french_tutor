@@ -22,6 +22,9 @@ $(PY_SENTINAL): $(REQUIREMENTS)
 flake8: $(PY_SENTINAL)
 	$(FLAKE8) french_tutor
 
+runserver: $(PY_SENTINAL)
+	$(PYTHON) french_tutor/french_tutor_3.py
+
 clean:
 	rm -rf $(VE)
 	rm -rf node_modules

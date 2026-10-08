@@ -30,22 +30,6 @@ jobs:
       - name: Smoke-test the image
         run: |
           docker run -d --name french_tutor-smoke -p 8000:8080 \
-            -e SECRET_KEY=ci-smoke \
             -e OPENAI_API_KEY=placeholder-not-used-by-these-checks \
-            -e APP_BASE_URL=http://localhost:8000 \
-            -e OIDC_ISSUER=http://localhost:8082/realms/CTL \
-            -e OIDC_CLIENT_ID=ctl-french_tutor \
-            -e OIDC_CLIENT_SECRET=local-dev-only-not-a-real-secret \
             french_tutor:ci \
-            ./ve/bin/gunicorn french_tutor.french_tutor_3:application --worker-class asgi --bind 0.0.0.0:8080
-          for i in $(seq 1 60); do
-            if curl -sf -o /dev/null http://localhost:8000/api/health; then
-              echo "image serves /api/health after ${i}s"
-              docker rm -f french_tutor-smoke >/dev/null
-              exit 0
-            fi
-            sleep 1
-          done
-          echo "image did not serve /api/health"; docker logs french_tutor-smoke || true
-          docker rm -f french_tutor-smoke || true
-          exit 1
+            make runserver

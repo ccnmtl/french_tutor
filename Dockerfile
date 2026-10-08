@@ -23,15 +23,11 @@ RUN ./ve/bin/pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 RUN rm -rf data/ *.dev.yml .env .dockerignore
-RUN mkdir -p /var/log/django
 
 EXPOSE 8000
 
 RUN adduser --system --group django
 
-RUN chown -R django:django /app /var/log/django
-
 USER django
 
-RUN chmod u+x entrypoint.sh
-CMD ["./entrypoint.sh"]
+CMD ["make", "runserver"]

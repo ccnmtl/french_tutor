@@ -1,5 +1,4 @@
 dotenv  # TODO: deprecated
-gunicorn==26.2.0
 openai
 pyaudio==0.2.14  # TODO: deprecated
 rich==15.0.0

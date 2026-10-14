@@ -23,7 +23,7 @@ flake8: $(PY_SENTINAL)
 	$(FLAKE8) french_tutor
 
 runserver: $(PY_SENTINAL)
-	$(PYTHON) french_tutor/french_tutor_3.py
+	$(PYTHON) -m http.server 8000
 
 clean:
 	rm -rf $(VE)

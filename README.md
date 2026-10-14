@@ -12,7 +12,7 @@ Based on the multi-agent design of `french_tutor_3.py` and `vocabulary_agent.py`
 git clone <this-repo>
 cd <this-repo>
 # Serve any static server. e.g.:
-python3 -m http.server 8000
+python -m http.server 8000
 # then open http://localhost:8000
 ```
 
@@ -24,7 +24,7 @@ For the `french_tutor/*.py` reference programs, set the key via env var:
 
 ```bash
 export OPENAI_API_KEY="sk-..."
-python3 french_tutor/french_tutor_3.py
+python french_tutor/french_tutor_3.py
 ```
 
 ---

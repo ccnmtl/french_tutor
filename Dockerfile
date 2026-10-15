@@ -1,7 +1,7 @@
 # Use the official Python base image.
 # List of public images from AWS can be located here:
 #   https://gallery.ecr.aws/docker/library/python
-FROM public.ecr.aws/docker/library/python:3.14-slim-trixie
+FROM public.ecr.aws/docker/library/python:3.15-slim-trixie
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends build-essential && \
